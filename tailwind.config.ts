@@ -18,6 +18,10 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				arabic: ['Cairo', 'Tajawal', 'system-ui', 'sans-serif'],
+				title: ['Tajawal', 'Cairo', 'system-ui', 'sans-serif'],
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -51,6 +55,12 @@ export default {
 				card: {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
+				},
+				red: {
+					DEFAULT: 'hsl(var(--red-primary))',
+					light: 'hsl(var(--red-light))',
+					dark: 'hsl(var(--red-dark))',
+					primary: 'hsl(var(--red-primary))'
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
