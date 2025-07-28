@@ -48,7 +48,7 @@ const Index = () => {
             <CardContent>
               <div className="aspect-video bg-muted rounded-lg overflow-hidden mb-4">
                 <iframe
-                  src="https://www.youtube.com/embed/live_stream?channel=UC_x5XG1OV2P6uZZ5FSM9Ttw&autoplay=1&mute=1"
+                  src="https://www.youtube.com/embed/Qw-yBeWAkO8?autoplay=1&mute=1"
                   title="البث المباشر"
                   className="w-full h-full"
                   frameBorder="0"
