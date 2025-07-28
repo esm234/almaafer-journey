@@ -14,6 +14,7 @@ import {
 
 const Header = () => {
   const [user, setUser] = useState<any>(null);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -26,12 +27,36 @@ const Header = () => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setUser(session?.user || null);
+      
+      if (session?.user) {
+        // Check user role
+        const { data: roleData } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', session.user.id)
+          .single();
+        
+        setUserRole(roleData?.role || null);
+      }
     };
     checkAuth();
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       setUser(session?.user || null);
+      
+      if (session?.user) {
+        // Check user role when auth state changes
+        const { data: roleData } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', session.user.id)
+          .single();
+        
+        setUserRole(roleData?.role || null);
+      } else {
+        setUserRole(null);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -121,6 +146,14 @@ const Header = () => {
                       {user.user_metadata?.display_name || user.email}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
+                    {userRole === 'admin' && (
+                      <DropdownMenuItem className="gap-2">
+                        <Link to="/admin" className="flex items-center gap-2 w-full">
+                          <Settings className="h-4 w-4" />
+                          لوحة التحكم
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
                     <DropdownMenuItem className="gap-2">
                       <Settings className="h-4 w-4" />
                       الإعدادات
