@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect } from "react";
 import { Play, Pause, RotateCcw, Clock } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const Pomodoro = () => {
   const [timeLeft, setTimeLeft] = useState(25 * 60); // 25 minutes in seconds
@@ -13,6 +15,24 @@ const Pomodoro = () => {
   const [sessions, setSessions] = useState(0);
   const [breakNote, setBreakNote] = useState("");
   const [showNoteInput, setShowNoteInput] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  
+  const { toast } = useToast();
+
+  // Check auth state
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user || null);
+    };
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user || null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   // Timer types
   const timerTypes = {
@@ -34,16 +54,27 @@ const Pomodoro = () => {
       if (!isBreak) {
         // Work session completed
         setSessions(prev => prev + 1);
+        saveSession('work', 25);
         setIsBreak(true);
         setShowNoteInput(true);
         // Start break
         const breakDuration = (sessions + 1) % 4 === 0 ? timerTypes.longBreak : timerTypes.shortBreak;
         setTimeLeft(breakDuration);
+        toast({
+          title: "انتهت جلسة المذاكرة!",
+          description: "وقت الاستراحة الآن",
+        });
       } else {
         // Break completed
+        const breakDuration = timeLeft === timerTypes.longBreak ? 15 : 5;
+        saveSession('break', breakDuration);
         setIsBreak(false);
         setShowNoteInput(false);
         setTimeLeft(timerTypes.work);
+        toast({
+          title: "انتهت الاستراحة!",
+          description: "وقت العودة للمذاكرة",
+        });
       }
     }
 
@@ -76,9 +107,36 @@ const Pomodoro = () => {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const saveNote = () => {
-    if (breakNote.trim()) {
-      // Save note to localStorage for now
+  const saveNote = async () => {
+    if (breakNote.trim() && user) {
+      try {
+        const { error } = await supabase
+          .from('user_notes')
+          .insert({
+            user_id: user.id,
+            content: breakNote,
+            created_during_break: true
+          });
+
+        if (error) {
+          console.error('Error saving note:', error);
+          toast({
+            title: "خطأ",
+            description: "لم يتم حفظ الملاحظة",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "تم الحفظ",
+            description: "تم حفظ ملاحظتك بنجاح",
+          });
+          setBreakNote("");
+        }
+      } catch (error) {
+        console.error('Error saving note:', error);
+      }
+    } else if (!user) {
+      // Save to localStorage if not logged in
       const notes = JSON.parse(localStorage.getItem('pomodoroNotes') || '[]');
       notes.push({
         note: breakNote,
@@ -87,6 +145,27 @@ const Pomodoro = () => {
       });
       localStorage.setItem('pomodoroNotes', JSON.stringify(notes));
       setBreakNote("");
+      toast({
+        title: "تم الحفظ محلياً",
+        description: "سجل دخولك لحفظ الملاحظات في السحابة",
+      });
+    }
+  };
+
+  const saveSession = async (sessionType: string, duration: number) => {
+    if (user) {
+      try {
+        await supabase
+          .from('pomodoro_sessions')
+          .insert({
+            user_id: user.id,
+            type: sessionType,
+            duration: duration,
+            notes: breakNote || null
+          });
+      } catch (error) {
+        console.error('Error saving session:', error);
+      }
     }
   };
 

@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect } from "react";
 import { MessageSquare, Calendar, User, Search, Filter } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 // Mock data - will be replaced with Supabase data
 const mockArticles = [
@@ -42,11 +44,47 @@ const mockArticles = [
 ];
 
 const Articles = () => {
-  const [articles, setArticles] = useState(mockArticles);
+  const [articles, setArticles] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedArticle, setSelectedArticle] = useState<any>(null);
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState<any[]>([]);
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  
+  const { toast } = useToast();
+
+  // Check auth state and load articles
+  useEffect(() => {
+    const loadData = async () => {
+      // Check auth
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user || null);
+
+      // Load articles
+      const { data: articlesData, error } = await supabase
+        .from('articles')
+        .select('*')
+        .eq('published', true)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error loading articles:', error);
+        setArticles(mockArticles); // Fallback to mock data
+      } else {
+        setArticles(articlesData || []);
+      }
+      setLoading(false);
+    };
+
+    loadData();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user || null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   // Mock comments for selected article
   const mockComments = [
@@ -71,22 +109,63 @@ const Articles = () => {
     article.content.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleArticleClick = (article: any) => {
+  const handleArticleClick = async (article: any) => {
     setSelectedArticle(article);
-    setComments(mockComments);
+    
+    // Load comments for this article
+    const { data: commentsData, error } = await supabase
+      .from('comments')
+      .select('*')
+      .eq('article_id', article.id)
+      .eq('approved', true)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error loading comments:', error);
+      setComments(mockComments); // Fallback
+    } else {
+      const processedComments = commentsData?.map(comment => ({
+        ...comment,
+        user: { display_name: 'مستخدم' }
+      })) || [];
+      setComments(processedComments);
+    }
   };
 
-  const handleCommentSubmit = () => {
-    if (comment.trim()) {
-      const newComment = {
-        id: Date.now().toString(),
-        content: comment,
-        user: { display_name: "أنت" },
-        created_at: new Date().toISOString(),
-        approved: false
-      };
-      setComments([...comments, newComment]);
-      setComment("");
+  const handleCommentSubmit = async () => {
+    if (comment.trim() && user && selectedArticle) {
+      try {
+        const { error } = await supabase
+          .from('comments')
+          .insert({
+            article_id: selectedArticle.id,
+            user_id: user.id,
+            content: comment,
+            approved: false // Requires admin approval
+          });
+
+        if (error) {
+          toast({
+            title: "خطأ",
+            description: "لم يتم إرسال التعليق",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "تم الإرسال",
+            description: "تعليقك في انتظار الموافقة",
+          });
+          setComment("");
+        }
+      } catch (error) {
+        console.error('Error submitting comment:', error);
+      }
+    } else if (!user) {
+      toast({
+        title: "تسجيل الدخول مطلوب",
+        description: "يجب تسجيل الدخول لإضافة تعليق",
+        variant: "destructive",
+      });
     }
   };
 

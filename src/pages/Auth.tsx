@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User, Mail, Lock, LogIn, UserPlus, Eye, EyeOff } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const Auth = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -16,6 +18,20 @@ const Auth = () => {
     confirmPassword: "",
     displayName: ""
   });
+  
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    // Check if user is already logged in
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate('/');
+      }
+    };
+    checkUser();
+  }, [navigate]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -28,12 +44,35 @@ const Auth = () => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (error) {
+        toast({
+          title: "خطأ في تسجيل الدخول",
+          description: error.message === "Invalid login credentials" ? 
+            "البريد الإلكتروني أو كلمة المرور غير صحيحة" : error.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "مرحباً بك!",
+          description: "تم تسجيل الدخول بنجاح",
+        });
+        navigate('/');
+      }
+    } catch (error) {
+      toast({
+        title: "خطأ",
+        description: "حدث خطأ غير متوقع",
+        variant: "destructive",
+      });
+    } finally {
       setIsLoading(false);
-      // Handle login logic here
-      console.log("Login attempt:", { email: formData.email, password: formData.password });
-    }, 2000);
+    }
   };
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -42,17 +81,66 @@ const Auth = () => {
 
     // Basic validation
     if (formData.password !== formData.confirmPassword) {
-      alert("كلمات المرور غير متطابقة");
+      toast({
+        title: "خطأ",
+        description: "كلمات المرور غير متطابقة",
+        variant: "destructive",
+      });
       setIsLoading(false);
       return;
     }
 
-    // Simulate API call
-    setTimeout(() => {
+    if (formData.password.length < 6) {
+      toast({
+        title: "خطأ",
+        description: "كلمة المرور يجب أن تكون 6 أحرف على الأقل",
+        variant: "destructive",
+      });
       setIsLoading(false);
-      // Handle signup logic here
-      console.log("Signup attempt:", formData);
-    }, 2000);
+      return;
+    }
+
+    try {
+      const { error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`,
+          data: {
+            display_name: formData.displayName,
+          }
+        }
+      });
+
+      if (error) {
+        toast({
+          title: "خطأ في إنشاء الحساب",
+          description: error.message === "User already registered" ? 
+            "المستخدم مسجل مسبقاً" : error.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "تم إنشاء الحساب!",
+          description: "تحقق من بريدك الإلكتروني لتأكيد الحساب",
+        });
+        // Reset form
+        setFormData({
+          email: "",
+          password: "",
+          confirmPassword: "",
+          displayName: ""
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "خطأ",
+        description: "حدث خطأ غير متوقع",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
