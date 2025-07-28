@@ -59,8 +59,10 @@ const Header = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuItem className="gap-2">
-                  <User className="h-4 w-4" />
-                  تسجيل الدخول
+                  <a href="/auth" className="flex items-center gap-2 w-full">
+                    <User className="h-4 w-4" />
+                    تسجيل الدخول
+                  </a>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="gap-2">
@@ -75,9 +77,9 @@ const Header = () => {
             </DropdownMenu>
 
             {/* CTA Button */}
-            <Button className="bg-accent hover:bg-accent/90 text-accent-foreground font-medium">
+            <a href="/" className="bg-accent hover:bg-accent/90 text-accent-foreground font-medium inline-flex items-center justify-center rounded-md px-4 py-2 text-sm transition-colors">
               انضم للبث المباشر
-            </Button>
+            </a>
           </div>
         </div>
       </div>
