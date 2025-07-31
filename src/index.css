@@ -13,105 +13,104 @@
 
 @layer base {
   :root {
-    /* Primary Colors - Black, White, Red (Optimized for vibrancy and contrast) */
-    --background: 0 0% 100%; /* Pure White */
-    --foreground: 0 0% 5%;   /* Near Black for text */
+    /* Primary Colors - Black, White, Red */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
 
-    --card: 0 0% 100%;       /* White card background */
-    --card-foreground: 0 0% 5%; /* Near Black for card text */
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 5%;
+    --popover-foreground: 0 0% 0%;
 
-    /* Primary - Deep Black for main elements */
-    --primary: 0 0% 5%;
-    --primary-foreground: 0 0% 98%; /* Off-white for contrast */
+    /* Primary - Black for main elements */
+    --primary: 0 0% 0%;
+    --primary-foreground: 0 0% 100%;
 
-    /* Secondary - Light gray for subtle elements, slightly warmer */
-    --secondary: 220 14.3% 95.9%; /* A soft, light gray */
-    --secondary-foreground: 0 0% 20%; /* Darker gray for secondary text */
+    /* Secondary - Light gray for subtle elements */
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 0%;
 
-    /* Muted - Gray tones, slightly darker for better readability */
-    --muted: 220 14.3% 90%; /* A more defined muted gray */
-    --muted-foreground: 220 8.9% 46.1%; /* Medium gray for muted text */
+    /* Muted - Gray tones */
+    --muted: 0 0% 95%;
+    --muted-foreground: 0 0% 45%;
 
-    /* Accent - Vibrant Red for highlights and CTAs */
-    --accent: 0 84% 55%; /* Slightly brighter red */
-    --accent-foreground: 0 0% 98%; /* Off-white for contrast */
+    /* Accent - Red for highlights and CTAs */
+    --accent: 0 84% 50%;
+    --accent-foreground: 0 0% 100%;
 
     /* Red variants for different uses */
-    --red-primary: 0 84% 55%;
-    --red-light: 0 84% 88%; /* Lighter red for subtle accents */
-    --red-dark: 0 84% 40%; /* Deeper red for hover/active states */
+    --red-primary: 0 84% 50%;
+    --red-light: 0 84% 85%;
+    --red-dark: 0 84% 35%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 220 14.3% 92%; /* Lighter, softer border */
-    --input: 220 14.3% 95%; /* Light input background */
-    --ring: 0 84% 55%; /* Accent red for focus rings */
+    --border: 0 0% 90%;
+    --input: 0 0% 95%;
+    --ring: 0 84% 50%;
 
-    --radius: 0.75rem; /* Consistent border radius */
+    --radius: 0.75rem;
 
-    /* Sidebar colors - Adjusted for better harmony with main palette */
-    --sidebar-background: 220 14.3% 98%; /* Very light gray */
-    --sidebar-foreground: 220 8.9% 20%; /* Dark gray for text */
-    --sidebar-primary: 220 14.3% 10%; /* Darker primary for sidebar elements */
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 220 14.3% 95%; /* Lighter accent for sidebar */
-    --sidebar-accent-foreground: 220 8.9% 10%;
-    --sidebar-border: 220 14.3% 90%;
-    --sidebar-ring: 0 84% 55%; /* Using accent red for consistency */
 
-    /* Shadow variables for a modern, soft look */
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
     /* Dark mode - Black background, white text, red accents */
-    --background: 0 0% 8%; /* Slightly softer dark background */
-    --foreground: 0 0% 95%; /* Off-white for text */
+    --background: 0 0% 5%;
+    --foreground: 0 0% 98%;
 
-    --card: 0 0% 12%; /* Darker card background */
-    --card-foreground: 0 0% 95%;
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 0 0% 12%;
-    --popover-foreground: 0 0% 95%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 0 0% 95%;
-    --primary-foreground: 0 0% 8%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 5%;
 
-    --secondary: 0 0% 18%; /* Darker secondary */
-    --secondary-foreground: 0 0% 90%;
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 0 0% 18%;
-    --muted-foreground: 0 0% 70%; /* Lighter muted text for contrast */
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 65%;
 
-    --accent: 0 84% 60%; /* Brighter red in dark mode */
-    --accent-foreground: 0 0% 95%;
+    --accent: 0 84% 55%;
+    --accent-foreground: 0 0% 98%;
 
-    --red-primary: 0 84% 60%;
-    --red-light: 0 84% 80%;
-    --red-dark: 0 84% 45%;
+    --red-primary: 0 84% 55%;
+    --red-light: 0 84% 75%;
+    --red-dark: 0 84% 40%;
 
-    --destructive: 0 84% 65%;
-    --destructive-foreground: 0 0% 95%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 20%; /* More visible border */
-    --input: 0 0% 18%;
-    --ring: 0 84% 60%;
-
-    /* Sidebar colors for dark mode */
-    --sidebar-background: 0 0% 15%;
-    --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 0 0% 90%;
-    --sidebar-primary-foreground: 0 0% 15%;
-    --sidebar-accent: 0 0% 20%;
-    --sidebar-accent-foreground: 0 0% 90%;
-    --sidebar-border: 0 0% 25%;
-    --sidebar-ring: 0 84% 60%;
+    --border: 0 0% 15%;
+    --input: 0 0% 12%;
+    --ring: 0 84% 55%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
 
@@ -123,8 +122,6 @@
   body {
     @apply bg-background text-foreground font-arabic;
     direction: rtl;
-    /* Smooth scrolling for anchor links */
-    scroll-behavior: smooth;
   }
 
   /* Arabic Typography */
@@ -142,35 +139,21 @@
     text-align: right;
   }
 
-  /* Custom scrollbar - More refined and subtle */
+  /* Custom scrollbar */
   ::-webkit-scrollbar {
-    width: 10px; /* Slightly wider for better usability */
-    height: 10px; /* For horizontal scrollbars */
+    width: 8px;
   }
 
   ::-webkit-scrollbar-track {
     background: hsl(var(--background));
-    border-radius: 5px; /* Slightly rounded track */
   }
 
   ::-webkit-scrollbar-thumb {
-    background: hsl(var(--muted)); /* Use muted color for a subtle thumb */
-    border-radius: 5px;
-    border: 2px solid hsl(var(--background)); /* Border to make it float */
+    background: hsl(var(--accent));
+    border-radius: 4px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--accent)); /* Accent color on hover for feedback */
-  }
-
-  /* Global shadow utility classes */
-  .shadow-sm {
-    box-shadow: var(--shadow-sm);
-  }
-  .shadow-md {
-    box-shadow: var(--shadow-md);
-  }
-  .shadow-lg {
-    box-shadow: var(--shadow-lg);
+    background: hsl(var(--red-dark));
   }
 }
